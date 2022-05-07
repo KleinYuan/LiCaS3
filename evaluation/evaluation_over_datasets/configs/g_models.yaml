@@ -1,0 +1,10 @@
+output_folder: /root/licas3/benchmark/reports/g
+models:
+  variables:
+    num_frames_in_seq: [1, 10, 20]
+  # TODO(future users): below are only a demo usage. PLEASE UPDATE them to where you save the pbs
+  kitti:
+    id_g001:
+      model_fp: /root/licas3/inference/g/licas3_kitti_sample_01_stride_05_beam_64_downsample@1617680382.8551874/best.pb
+      l: 5
+      s: 1

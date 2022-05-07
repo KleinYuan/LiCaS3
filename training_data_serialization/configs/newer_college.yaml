@@ -1,0 +1,78 @@
+# Enable debug mode will disable multi-processor so that you can visualize the inputs in order
+name: "newer_college"
+debug_mode: False
+hardware_synced: False
+
+sensors_info:
+  # https://ori-drs.github.io/newer-college-dataset/platform/
+  camera:
+    frequency: 30 # Hz
+    type: "Intel RealSense D435i"
+    shutter: "global"
+    shape: [480, 848] # h 480 , w 848
+  lidar:
+    frequency: 10 # Hz
+    type: "Ouster OS-1-64"
+    beams: 64
+    range: 120 # m
+    fov: [45, 360] # vertical, horizontal
+
+calibrations:
+  # Below are extracted from kilbra calibration yaml
+  lidar_to_lidar_imu_hom: [[ -1.0000000,  0.0000000,  0.0000000, -0.006253 ],
+                         [ 0.0000000,  -1.0000000,  0.0000000, 0.011775 ],
+                         [ 0.0000000,  0.0000000,  1.0000000 , -0.028535 ],
+                         [ 0.0000000,  0.0000000,  0.0000000 , 1.0000000 ]]
+  lidar_imu_to_cam_hom: [ [ 0.7099216283860768, -0.7041416662469333, 0.013992691115502887, 0.015627525086609025 ],
+                      [ 0.02460002682200807, 0.004936229792296243, -0.9996851866041602, -0.01981648043281047 ],
+                      [ 0.703850921879071, 0.7100423561242176, 0.020826240168402843, -0.07544143005003269 ],
+                      [ 0.0, 0.0, 0.0, 1.0 ] ]
+  R_hom: [[ 431.3873911369959, 0., 430.2496176152663 ],
+      [ 0., 427.4407802012019, 238.52694867508183 ],
+      [ 0., 0., 1. ]]
+
+  P: [[ 0.007017508922248575, -0.002598448110748391, -0.0014755213248257705, 0.0006640775125219394]]
+
+raw_data:
+  name: short_time_experiment
+  root_dir: "Replace this with your raw data folder"
+  camera_sub_folder: infra1
+  lidar_sub_folder: ouster_scan
+  time_offsets_csv_fp: "Replace this with your timeoffset csv path" # timeoffset/nc-short-time-offsets.csv
+  generated_fp:
+    synced_raw_data_info: "Replace this with where you would like to save the synced raw data info" # xxxx/synced_raw_data_info.pkl
+
+# This section is only used to generate annotation data, optimizing better visualization
+labelling_data:
+  chunk_size: 500
+  downsample_ratio: 0.1 # TODO: This depends on how big the machine is
+  output_format: 'jpg'
+  output_dir: "Replace this with where you would like to save the annotation targets"
+  size:
+    H: 300
+    W: 500
+
+training_data:
+  chunk_size: 2048
+  downsample_ratio: 0.5 # TODO: This depends on how big the machine is
+  skip_frames: 400 # the first 400 frames are just staying still, meaningless. So I just skip them
+  z_norm_methods: 'lidar_range'
+  output_format: 'tfrecords'
+  output_dir: "Replace this with where you would like to save the tfrecords"
+  split_ratio: [0.7, 0.2, 0.1] # training/validation/testing
+  sampling_stride: 1
+  sampling_window: 5
+  crop_shape: [[0, 92], [16, 144]] # Cropping the H, W of X so that it's 2***
+  features:
+    X:
+      modality: 'image'
+      data_type: 'float32'
+      nhwc: True
+      H: 64
+      W: 128
+      C: 24
+      feature_name:  'X'
+    Y:
+      modality: 'scalar'
+      data_type: 'float32'
+      feature_name: 'Y'

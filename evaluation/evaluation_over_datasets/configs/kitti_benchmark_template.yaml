@@ -1,0 +1,62 @@
+benchmarks:
+  model_type: '{}'
+  h_tensors: # classifier for online
+    inputs:
+      - '{}/Placeholders/X:0'
+    outputs:
+      - '{}/prediction_from_classifier:0'
+  g_tensors: # unet for offline
+    inputs:
+      - '{}/Placeholders/X:0'
+    outputs:
+      - '{}/prediction_from_g:0'
+      - '{}/losses_from_g:0'
+  pb_fp: '{}'
+  name: "kitti"
+  hardware_synced: False
+
+  sensors_info:
+    # http://www.cvlibs.net/datasets/kitti/setup.php
+    camera:
+      frequency: 10 # Hz
+      type: "Point Grey Flea 2 (FL2-14S3C-C)"
+      shutter: "global"
+      shape: [ 375, 1242 ] # h 375 , w 1242 # Original is 1382 x 512, the size is from processed
+    lidar:
+      frequency: 10 # Hz
+      type: "Velodyne HDL-64E"
+      beams: 64
+      range: 120 # m
+      fov: [ 26.9, 360 ] # vertical, horizontal
+
+  raw_data:
+    name: kitti_2011_09_26
+    root_dir: "Replace this with where you saved the testing tfrecords"
+    camera_sub_folder: image_02
+    lidar_sub_folder: velodyne_points
+
+  results:
+    save_dir: /root/licas3/benchmark/results/
+
+  training_data:
+    skip_frames: 0
+    sampling_window: '{}' # by default, we use a single lidar frame
+    sampling_stride: '{}' # skip every every two frames
+    z_norm_methods: 'lidar_range'
+    multi_frame_test:
+      num_frames_in_seq: '{}'
+    crop_shape: [[32, 64], [27, 283]] # Cropping the H, W of X so that it's 2***
+    reduce_lidar_line_to: '{}' # TODO: this needs to be moved to the args for the trigger
+    features:
+      X:
+        modality: 'image'
+        data_type: 'float32'
+        nhwc: Trues
+        H: 32
+        W: 256
+        C: '{}' # (sampling_window + 1) * 4
+        feature_name: 'X'
+      Y:
+        modality: 'scalar'
+        data_type: 'float32'
+        feature_name: 'Y'

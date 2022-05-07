@@ -1,0 +1,16 @@
+open3d==0.8
+tensorflow-gpu==1.14
+pandas
+pyyaml==5.4.1
+python-box
+fire
+six
+tqdm
+pathlib
+gast==0.2.2
+opencv-contrib-python
+stn
+# Below packages are mainly for evaluations against rosbags
+pycryptodomex # this is for rosbag compatibility for python3
+python-gnupg # this is for rosbag compatibility for python3
+bagpy # this msg somehow helps resolve the sensor_msgs dep issue for ros_numpy. Magic, isn't it?

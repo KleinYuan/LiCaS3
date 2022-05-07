@@ -1,0 +1,71 @@
+name: 'sl_kitti_sample_01_stride_05_beam_64_downsample_05'
+
+tensors:
+  placeholders:
+    X:
+      shape: [32, 256, 32]
+    Y:
+      shape: [ 1 ]
+  hyper_params:
+    base_depth: 32
+    classification_loss_weight: 0.01
+    cross_modal_recon_loss_weight: 1.0
+
+train:
+  stop_val_loss_decrease: -0.05
+  first_stage_epochs: 15
+  epochs: 30
+  val_epoch: 1
+  save_epoch: 1
+  batch_size: 32
+  start_learning_rate: 0.0001
+  stage2_learning_rate: 0.00001
+  lr_decay_step: 300000
+  lr_decay_rate: 0.1
+  pre_trained_weights: []
+  continue_training: False
+  optimizer_var_list: []
+  devices:
+    GPU: 1
+
+machine:
+  save_dir: './results/save/'
+  log_dir: './results/log/'
+
+data:
+  num_parallel_reads: 16
+  inputs:
+    # Ensure, this key is the same the model.tensor_dict
+    # Below are to be resized and sliced in pre-process to match the placeholders
+    X:
+      modality: 'image'
+      data_type: 'float32'
+      nhwc: True
+      H: 32
+      W: 256
+      C: 32
+      feature_names:
+        - 'X'
+    Y:
+      modality: 'scalar'
+      data_type: 'float32'
+      shape: [ 1 ]
+      # Feature listed below will be random chosen on the fly
+      feature_names:
+        - 'Y'
+  # Below are configs for tfrecords files
+  compression_type: '' # no compression
+  suffix: 'tfrecord'
+  tfrecords_train_dirs:
+    - "Replace this with where you saved the training tfrecords"
+  tfrecords_test_dirs:
+    - "Replace this with where you saved the validation tfrecords"
+
+
+inference:
+  included_tensor_names:
+  - 'sl_kitti_sample_01_stride_05_beam_64_downsample_05'
+  - 'classifier'
+
+  freeze:
+    output_node_name: 'sl_kitti_sample_01_stride_05_beam_64_downsample_05/prediction_from_classifier'

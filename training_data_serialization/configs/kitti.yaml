@@ -1,0 +1,105 @@
+# Enable debug mode will disable multi-processor so that you can visualize the inputs in order
+name: "kitti"
+debug_mode: False
+hardware_synced: True
+
+sensors_info:
+  # http://www.cvlibs.net/datasets/kitti/setup.php
+  camera:
+    frequency: 10 # Hz
+    type: "Point Grey Flea 2 (FL2-14S3C-C)"
+    shutter: "global"
+    shape: [375, 1242] # h 375 , w 1242 # Original is 1382 x 512, the size is from processed
+  lidar:
+    frequency: 10 # Hz
+    type: "Velodyne HDL-64E"
+    beams: 64
+    range: 120 #80 #  m
+    fov: [26.9, 360] # vertical, horizontal
+
+raw_data:
+  name: kitti_2011_09_26
+  root_dir: "Replace this with your training / validation / testing raw data sub-folder"
+  camera_sub_folder: image_02
+  lidar_sub_folder: velodyne_points
+
+training_data:
+  chunk_size: 5000
+  downsample_ratio: 0.5 # TODO: This depends on how big the machine is
+  skip_frames: 0
+  output_format: 'tfrecords'
+  # TODO: the file name shall be automatcially generated from the yaml configs
+  output_dir: "Replace this with where you would like to save the tfrecords"
+  name:  "training" #  ["training", "testing", "validation"]
+  sampling_window: 5 # by default, we use a single lidar frame
+  sampling_stride: 1 # skip every every two frames
+  z_norm_methods: 'lidar_range'  #'lidar_range_and_lidar_depth' # 'group' #
+  crop_shape: [[32, 64], [27, 283]] # Cropping the H, W of X so that it's 2***
+  reduce_lidar_line_to: 64 # TODO: this needs to be moved to the args for the trigger
+  features:
+    X:
+      modality: 'image'
+      data_type: 'float32'
+      nhwc: True
+      H: 32 # original size is 93
+      W: 256 # origin size is 310
+      C: 24 # (sampling_window + 1) * 4
+      feature_name: 'X'
+    Y:
+      modality: 'scalar'
+      data_type: 'float32'
+      feature_name: 'Y'
+
+# In my experiment, below is the training / testing data
+# Testing Data
+#{'num_data': 2161,
+# 'num_data_stats': {'2011_09_26_drive_0005_sync': 154,
+#                    '2011_09_26_drive_0015_sync': 297,
+#                    '2011_09_26_drive_0023_sync': 474,
+#                    '2011_09_26_drive_0036_sync': 803,
+#                    '2011_09_26_drive_0093_sync': 433},
+# 'num_drive': 5}
+
+# Training Data
+#{'num_data': 13719,
+# 'num_data_stats': {'2011_09_26_drive_0001_sync': 108,
+#                    '2011_09_26_drive_0002_sync': 77,
+#                    '2011_09_26_drive_0009_sync': 443,
+#                    '2011_09_26_drive_0011_sync': 233,
+#                    '2011_09_26_drive_0013_sync': 144,
+#                    '2011_09_26_drive_0014_sync': 314,
+#                    '2011_09_26_drive_0017_sync': 114,
+#                    '2011_09_26_drive_0018_sync': 270,
+#                    '2011_09_26_drive_0019_sync': 481,
+#                    '2011_09_26_drive_0020_sync': 86,
+#                    '2011_09_26_drive_0022_sync': 800,
+#                    '2011_09_26_drive_0027_sync': 188,
+#                    '2011_09_26_drive_0028_sync': 430,
+#                    '2011_09_26_drive_0029_sync': 430,
+#                    '2011_09_26_drive_0032_sync': 390,
+#                    '2011_09_26_drive_0035_sync': 131,
+#                    '2011_09_26_drive_0039_sync': 395,
+#                    '2011_09_26_drive_0046_sync': 125,
+#                    '2011_09_26_drive_0048_sync': 22,
+#                    '2011_09_26_drive_0051_sync': 438,
+#                    '2011_09_26_drive_0052_sync': 78,
+#                    '2011_09_26_drive_0056_sync': 294,
+#                    '2011_09_26_drive_0057_sync': 361,
+#                    '2011_09_26_drive_0059_sync': 373,
+#                    '2011_09_26_drive_0060_sync': 78,
+#                    '2011_09_26_drive_0061_sync': 703,
+#                    '2011_09_26_drive_0064_sync': 570,
+#                    '2011_09_26_drive_0070_sync': 420,
+#                    '2011_09_26_drive_0079_sync': 100,
+#                    '2011_09_26_drive_0084_sync': 383,
+#                    '2011_09_26_drive_0086_sync': 706,
+#                    '2011_09_26_drive_0087_sync': 729,
+#                    '2011_09_26_drive_0091_sync': 340,
+#                    '2011_09_26_drive_0095_sync': 268,
+#                    '2011_09_26_drive_0096_sync': 475,
+#                    '2011_09_26_drive_0101_sync': 936,
+#                    '2011_09_26_drive_0104_sync': 312,
+#                    '2011_09_26_drive_0106_sync': 227,
+#                    '2011_09_26_drive_0113_sync': 87,
+#                    '2011_09_26_drive_0117_sync': 660},
+# 'num_drive': 40}

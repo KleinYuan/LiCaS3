@@ -1,0 +1,80 @@
+benchmarks:
+  h_tensors:
+    inputs:
+      - '{}/Placeholders/X:0'
+    outputs:
+      - '{}/prediction_from_classifier:0'
+  pb_fp: '{}'
+
+  # Enable debug mode will disable multi-processor so that you can visualize the inputs in order
+  name: "new_college"
+  debug_mode: False
+  hardware_synced: False
+
+  sensors_info:
+    # https://ori-drs.github.io/newer-college-dataset/platform/
+    camera:
+      frequency: 30 # Hz
+      type: "Intel RealSense D435i"
+      shutter: "global"
+      shape: [ 480, 848 ] # h 480 , w 848
+    lidar:
+      frequency: 10 # Hz
+      type: "Ouster OS-1-64"
+      beams: 64
+      range: 120 # m
+      fov: [ 45, 360 ] # vertical, horizontal
+
+  calibrations:
+    # Below are extracted from kilbra calibration yaml
+    lidar_to_lidar_imu_hom: [ [ -1.0000000,  0.0000000,  0.0000000, -0.006253 ],
+                              [ 0.0000000,  -1.0000000,  0.0000000, 0.011775 ],
+                              [ 0.0000000,  0.0000000,  1.0000000 , -0.028535 ],
+                              [ 0.0000000,  0.0000000,  0.0000000 , 1.0000000 ] ]
+    lidar_imu_to_cam_hom: [ [ 0.7099216283860768, -0.7041416662469333, 0.013992691115502887, 0.015627525086609025 ],
+                            [ 0.02460002682200807, 0.004936229792296243, -0.9996851866041602, -0.01981648043281047 ],
+                            [ 0.703850921879071, 0.7100423561242176, 0.020826240168402843, -0.07544143005003269 ],
+                            [ 0.0, 0.0, 0.0, 1.0 ] ]
+    R_hom: [ [ 431.3873911369959, 0., 430.2496176152663 ],
+             [ 0., 427.4407802012019, 238.52694867508183 ],
+             [ 0., 0., 1. ] ]
+
+    P: [ [ 0.007017508922248575, -0.002598448110748391, -0.0014755213248257705, 0.0006640775125219394 ] ]
+
+  raw_data:
+    name: short_time_experiment
+    root_dir: "Replace this with where you saved the raw data"
+    camera_sub_folder: infra1
+    lidar_sub_folder: ouster_scan
+    time_offsets_csv_fp: timeoffset/nc-short-time-offsets.csv
+    generated_fp:
+      synced_raw_data_info: "Replace this with where you would like to save the synced raw data info" # xxxx/synced_raw_data_info.pkl
+
+  labelled_data:
+    data_dir: "Replace this with where you saved the raw data of the extra labelled testing datasets"
+    label_fp: "Replace this with where you saved the txt labels of the extra labelled testing datasets""
+    sub_folders: ['0', '1']
+
+  training_data:
+    chunk_size: 5000
+    z_norm_methods: 'lidar_range'
+    skip_frames: 400
+    split_ratio: [0.7, 0.2, 0.1] #[0.0, 0.0, 1] # # training/validation/testing
+    sampling_window: '{}' # by default, we use a single lidar frame
+    sampling_stride: '{}' # skip every every two frames
+    multi_frame_test:
+      num_frames_in_seq: '{}'
+    crop_shape: [[0, 92], [16, 144]] # Cropping the H, W of X so that it's 2***
+    features:
+      X:
+        modality: 'image'
+        data_type: 'float32'
+        nhwc: True
+        H: 64
+        W: 128
+        C: '{}' # (sampling_window + 1) * 4
+        feature_name:  'X'
+      Y:
+        modality: 'scalar'
+        data_type: 'float32'
+        feature_name: 'Y'
