@@ -388,18 +388,18 @@ Please check the evaluation folder [README.md](evaluation/README.md).
 
 ## Citation
 
-([Early Access](https://ieeexplore.ieee.org/document/9770125) Status Now. I will update it once volume/number is available.)
+https://ieeexplore.ieee.org/document/9770125
 
 ```
 @ARTICLE{9770125,
-author={Yuan, Kaiwen and Ding, Li and Abdelfattah, Mazen and Wang, Z. Jane},
-journal={IEEE Transactions on Robotics},
-title={LiCaS3: A Simple LiDAR–Camera Self-Supervised Synchronization Method},
-year={2022},
-volume={},
-number={},
-pages={1-16},
-doi={10.1109/TRO.2022.3167455}}
+  author={Yuan, Kaiwen and Ding, Li and Abdelfattah, Mazen and Wang, Z. Jane},
+  journal={IEEE Transactions on Robotics}, 
+  title={LiCaS3: A Simple LiDAR–Camera Self-Supervised Synchronization Method}, 
+  year={2022},
+  volume={38},
+  number={5},
+  pages={3203-3218},
+  doi={10.1109/TRO.2022.3167455}}
 ```
 
 
